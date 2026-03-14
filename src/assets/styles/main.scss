@@ -291,3 +291,23 @@ pre {
   background: var(--accent-primary);
   color: white;
 }
+
+/* Quill Editor 样式 */
+.ql-container {
+  min-height: 300px;
+  font-size: 15px;
+}
+
+.ql-editor {
+  min-height: 300px;
+}
+
+.ql-toolbar {
+  border-radius: 8px 8px 0 0;
+  background: #f9fafb;
+}
+
+.ql-container {
+  border-radius: 0 0 8px 8px;
+  background: #fff;
+}

@@ -90,14 +90,14 @@
           </div>
           
           <div class="form-group">
-            <div class="editor-tabs">
-              <button type="button" :class="{ active: !showPreview }" @click="showPreview = false">编辑</button>
-              <button type="button" :class="{ active: showPreview }" @click="showPreview = true">预览</button>
-            </div>
-            <div v-if="!showPreview">
-              <textarea v-model="form.content" placeholder="支持 Markdown 语法" rows="15"></textarea>
-            </div>
-            <div v-else class="markdown-preview" v-html="renderMarkdown(form.content)"></div>
+            <label>内容</label>
+            <QuillEditor 
+              v-model:content="form.content" 
+              contentType="html"
+              theme="snow"
+              toolbar="full"
+              placeholder="开始写作..."
+            />
           </div>
           
           <div class="form-actions">
@@ -114,12 +114,21 @@
 
 <script setup>
 import { ref, reactive, onMounted, watch } from 'vue'
-import { marked } from 'marked'
 import { getAllPosts, createPost as apiCreatePost, updatePost as apiUpdatePost, deletePost as apiDeletePost, getCategories } from '../../api'
 
 const handleCreatePost = (data) => apiCreatePost(data)
 const handleUpdatePost = (id, data) => apiUpdatePost(id, data)
 const handleDeletePost = (id) => apiDeletePost(id)
+
+// 编辑器配置
+const toolbars = {
+  bold: true, italic: true, header: true, underline: true, strikethrough: true,
+  mark: true, superscript: true, subscript: true, quote: true, ol: true, ul: true,
+  link: true, table: true, imagelink: true, code: true, htmlcode: true,
+  undo: true, redo: true, trash: true, save: true,
+  navigation: true, alignleft: true, aligncenter: true, alignright: true,
+  subfield: true, preview: true, fullscreen: true
+}
 
 const posts = ref([])
 const categories = ref([])
@@ -128,11 +137,6 @@ const submitting = ref(false)
 const showCreateForm = ref(false)
 const editingPost = ref(null)
 const statusFilter = ref('all')
-const showPreview = ref(false)
-
-const renderMarkdown = (text) => {
-  return marked(text || '')
-}
 
 const form = reactive({
   title: '',
