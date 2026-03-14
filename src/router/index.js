@@ -3,6 +3,21 @@ import HomeView from '../views/HomeView.vue'
 import PostView from '../views/PostView.vue'
 import CategoryView from '../views/CategoryView.vue'
 import AboutView from '../views/AboutView.vue'
+import LoginView from '../views/admin/LoginView.vue'
+import AdminLayout from '../views/admin/AdminLayout.vue'
+import AdminDashboard from '../views/admin/AdminDashboard.vue'
+import AdminPosts from '../views/admin/AdminPosts.vue'
+import AdminCategories from '../views/admin/AdminCategories.vue'
+
+// Auth guard
+const requireAuth = (to, from, next) => {
+  const token = localStorage.getItem('token')
+  if (!token) {
+    next({ name: 'login' })
+  } else {
+    next()
+  }
+}
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -26,6 +41,38 @@ const router = createRouter({
       path: '/about',
       name: 'about',
       component: AboutView
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: LoginView
+    },
+    {
+      path: '/admin',
+      component: AdminLayout,
+      beforeEnter: requireAuth,
+      children: [
+        {
+          path: '',
+          name: 'admin',
+          redirect: '/admin/dashboard'
+        },
+        {
+          path: 'dashboard',
+          name: 'admin-dashboard',
+          component: AdminDashboard
+        },
+        {
+          path: 'posts',
+          name: 'admin-posts',
+          component: AdminPosts
+        },
+        {
+          path: 'categories',
+          name: 'admin-categories',
+          component: AdminCategories
+        }
+      ]
     }
   ],
   scrollBehavior(to, from, savedPosition) {

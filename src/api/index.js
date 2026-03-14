@@ -8,9 +8,37 @@ const api = axios.create({
   }
 })
 
+// Add auth token to requests
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token')
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
+  return config
+})
+
+// Handle auth errors
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem('token')
+      localStorage.removeItem('user')
+      window.location.href = '/login'
+    }
+    return Promise.reject(error)
+  }
+)
+
+// Auth
+export const login = (credentials) => api.post('/auth/login', credentials)
+export const register = (userData) => api.post('/auth/register', userData)
+export const getCurrentUser = () => api.get('/auth/me')
+
 // Posts
 export const getPosts = (params) => api.get('/posts', { params })
 export const getPost = (slug) => api.get(`/posts/${slug}`)
+export const getAllPosts = (params) => api.get('/posts', { params: { ...params, status: 'all' } })
 export const createPost = (data) => api.post('/posts', data)
 export const updatePost = (id, data) => api.patch(`/posts/${id}`, data)
 export const deletePost = (id) => api.delete(`/posts/${id}`)
