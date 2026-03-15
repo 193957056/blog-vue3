@@ -7,31 +7,58 @@
       </router-link>
       
       <div class="nav-links">
-        <router-link to="/" class="nav-link">首页</router-link>
-        <router-link to="/category/tech" class="nav-link">技术</router-link>
-        <router-link to="/category/design" class="nav-link">设计</router-link>
-        <router-link to="/about" class="nav-link">关于</router-link>
+        <router-link to="/" class="nav-link">{{ $t('nav.home') }}</router-link>
+        <router-link to="/category/tech" class="nav-link">{{ $t('nav.tech') }}</router-link>
+        <router-link to="/category/design" class="nav-link">{{ $t('nav.design') }}</router-link>
+        <router-link to="/about" class="nav-link">{{ $t('nav.about') }}</router-link>
       </div>
-      
-      <button class="theme-toggle" @click="$emit('toggle-theme')" :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'">
-        <svg v-if="isDark" class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="5"/>
-          <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
-        </svg>
-        <svg v-else class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-        </svg>
-      </button>
+
+      <div class="nav-actions">
+        <div class="lang-switcher">
+          <select v-model="currentLocale" @change="changeLocale" class="lang-select">
+            <option value="zh-CN">中文</option>
+            <option value="en">English</option>
+            <option value="ja">日本語</option>
+            <option value="ko">한국어</option>
+          </select>
+        </div>
+        
+        <button class="theme-toggle" @click="$emit('toggle-theme')" :aria-label="isDark ? $t('theme.light') : $t('theme.dark')">
+          <svg v-if="isDark" class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"/>
+            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+          </svg>
+          <svg v-else class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+        </button>
+      </div>
     </div>
   </nav>
 </template>
 
 <script setup>
-defineProps({
+import { ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { locale } = useI18n()
+
+const props = defineProps({
   isDark: Boolean
 })
 
 defineEmits(['toggle-theme'])
+
+const currentLocale = ref(locale.value)
+
+const changeLocale = () => {
+  locale.value = currentLocale.value
+  localStorage.setItem('locale', currentLocale.value)
+}
+
+watch(locale, (newLocale) => {
+  currentLocale.value = newLocale
+})
 </script>
 
 <style scoped>
@@ -116,6 +143,35 @@ defineEmits(['toggle-theme'])
     
     &::after {
       width: 100%;
+    }
+  }
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.lang-switcher {
+  .lang-select {
+    padding: 8px 12px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    cursor: pointer;
+    outline: none;
+    transition: all var(--transition-fast);
+    
+    &:hover {
+      border-color: var(--accent-primary);
+    }
+    
+    option {
+      background: var(--bg-card);
+      color: var(--text-primary);
     }
   }
 }

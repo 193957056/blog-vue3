@@ -54,4 +54,10 @@ export const getTags = () => api.get('/tags')
 // Stats
 export const getStats = () => api.get('/stats')
 
+// AI Writing Assistant
+export const aiPolish = (text) => api.post('/ai/polish', { text })
+export const aiSummary = (content) => api.post('/ai/summary', { content })
+export const aiSEO = (title, content) => api.post('/ai/seo', { title, content })
+export const aiTranslate = (text, target_lang) => api.post('/ai/translate', { text, target_lang })
+
 export default api

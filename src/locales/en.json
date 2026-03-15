@@ -1,0 +1,72 @@
+export default {
+  nav: {
+    home: 'Home',
+    tech: 'Tech',
+    design: 'Design',
+    about: 'About'
+  },
+  theme: {
+    light: 'Switch to light mode',
+    dark: 'Switch to dark mode'
+  },
+  footer: {
+    tagline: 'Recording thoughts through words, interpreting beauty through design',
+    navigation: 'Navigation',
+    about: 'About',
+    contact: 'Contact',
+    allRights: 'All rights reserved.'
+  },
+  common: {
+    loading: 'Loading...',
+    noData: 'No data',
+    confirm: 'Confirm',
+    cancel: 'Cancel',
+    save: 'Save',
+    saving: 'Saving...',
+    edit: 'Edit',
+    delete: 'Delete',
+    create: 'Create',
+    publish: 'Publish',
+    draft: 'Draft',
+    published: 'Published'
+  },
+  post: {
+    all: 'All Posts',
+    published: 'Published',
+    draft: 'Draft',
+    newPost: 'New Post',
+    createFirst: 'Create First Post',
+    noPosts: 'No posts yet',
+    title: 'Title',
+    category: 'Category',
+    selectCategory: 'Select Category',
+    status: 'Status',
+    cover: 'Cover Image URL',
+    excerpt: 'Excerpt',
+    content: 'Content',
+    startWriting: 'Start writing...',
+    uncategorized: 'Uncategorized',
+    views: 'views',
+    editPost: 'Edit Post',
+    createPost: 'New Post',
+    deleteConfirm: 'Are you sure you want to delete this post?',
+    saveFailed: 'Save failed'
+  },
+  category: {
+    tech: 'Tech',
+    design: 'Design',
+    list: 'Categories',
+    all: 'All Categories',
+    newCategory: 'New Category',
+    createFirst: 'Create First Category',
+    noCategories: 'No categories yet',
+    name: 'Name',
+    slug: 'Slug',
+    color: 'Color',
+    articles: 'articles',
+    editCategory: 'Edit Category',
+    createCategory: 'New Category',
+    deleteConfirm: 'Are you sure you want to delete this category?',
+    saveFailed: 'Save failed'
+  }
+}

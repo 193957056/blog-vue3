@@ -15,8 +15,11 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import NavBar from './components/NavBar.vue'
 import FooterComp from './components/FooterComp.vue'
+
+const { locale } = useI18n()
 
 const isDark = ref(false)
 const scrollProgress = ref(0)
@@ -36,6 +39,12 @@ onMounted(() => {
   // Load theme from localStorage
   const savedTheme = localStorage.getItem('theme')
   isDark.value = savedTheme === 'dark'
+  
+  // Load locale from localStorage
+  const savedLocale = localStorage.getItem('locale')
+  if (savedLocale) {
+    locale.value = savedLocale
+  }
   
   window.addEventListener('scroll', handleScroll)
 })

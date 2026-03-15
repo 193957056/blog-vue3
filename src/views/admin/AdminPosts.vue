@@ -3,21 +3,21 @@
     <div class="toolbar">
       <div class="toolbar-left">
         <select v-model="statusFilter" class="filter-select">
-          <option value="all">全部文章</option>
-          <option value="published">已发布</option>
-          <option value="draft">草稿</option>
+          <option value="all">{{ $t('post.all') }}</option>
+          <option value="published">{{ $t('post.published') }}</option>
+          <option value="draft">{{ $t('post.draft') }}</option>
         </select>
       </div>
       <button @click="showCreateForm = true" class="create-btn">
-        + 新建文章
+        + {{ $t('post.newPost') }}
       </button>
     </div>
     
-    <div v-if="loading" class="loading">加载中...</div>
+    <div v-if="loading" class="loading">{{ $t('common.loading') }}</div>
     
     <div v-else-if="posts.length === 0" class="empty-state">
-      <p>暂无文章</p>
-      <button @click="showCreateForm = true" class="create-btn">创建第一篇文章</button>
+      <p>{{ $t('post.noPosts') }}</p>
+      <button @click="showCreateForm = true" class="create-btn">{{ $t('post.createFirst') }}</button>
     </div>
     
     <div v-else class="posts-list">
@@ -28,43 +28,43 @@
         <div class="post-content">
           <div class="post-header">
             <h3 class="post-title">{{ post.title }}</h3>
-            <span class="post-status" :class="post.status">{{ post.status }}</span>
+            <span class="post-status" :class="post.status">{{ $t('post.' + post.status) }}</span>
           </div>
           <div class="post-meta">
             <span class="category" :style="{ color: post.category?.color }">
-              {{ post.category?.name || '未分类' }}
+              {{ post.category?.name || $t('post.uncategorized') }}
             </span>
             <span class="separator">•</span>
             <span class="date">{{ formatDate(post.created_at) }}</span>
             <span class="separator">•</span>
-            <span class="views">{{ post.view_count }} 阅读</span>
+            <span class="views">{{ post.view_count }} {{ $t('post.views') }}</span>
           </div>
         </div>
         <div class="post-actions">
-          <button @click="editPost(post)" class="action-btn edit" title="编辑">✏️</button>
-          <button @click="deletePost(post.id)" class="action-btn delete" title="删除">🗑️</button>
+          <button @click="editPost(post)" class="action-btn edit" :title="$t('common.edit')">✏️</button>
+          <button @click="deletePost(post.id)" class="action-btn delete" :title="$t('common.delete')">🗑️</button>
         </div>
       </div>
     </div>
     
     <!-- Create/Edit Modal -->
     <div v-if="showCreateForm" class="modal-overlay" @click.self="closeForm">
-      <div class="modal">
+      <div class="modal" :class="{ 'with-ai-assistant': true }">
         <div class="modal-header">
-          <h2>{{ editingPost ? '编辑文章' : '新建文章' }}</h2>
+          <h2>{{ editingPost ? $t('post.editPost') : $t('post.createPost') }}</h2>
           <button @click="closeForm" class="close-btn">×</button>
         </div>
         
         <form @submit.prevent="submitPost" class="post-form">
           <div class="form-group">
-            <label>标题</label>
-            <input v-model="form.title" type="text" placeholder="文章标题" required />
+            <label>{{ $t('post.title') }}</label>
+            <input v-model="form.title" type="text" :placeholder="$t('post.title')" required />
           </div>
           
           <div class="form-group">
-            <label>分类</label>
+            <label>{{ $t('post.category') }}</label>
             <select v-model="form.category_id" required>
-              <option value="">选择分类</option>
+              <option value="">{{ $t('post.selectCategory') }}</option>
               <option v-for="cat in categories" :key="cat.id" :value="cat.id">
                 {{ cat.name }}
               </option>
@@ -72,49 +72,77 @@
           </div>
           
           <div class="form-group">
-            <label>状态</label>
+            <label>{{ $t('post.status') }}</label>
             <select v-model="form.status">
-              <option value="draft">草稿</option>
-              <option value="published">已发布</option>
+              <option value="draft">{{ $t('post.draft') }}</option>
+              <option value="published">{{ $t('post.published') }}</option>
             </select>
           </div>
           
           <div class="form-group">
-            <label>封面图 URL</label>
+            <label>{{ $t('post.cover') }}</label>
             <input v-model="form.cover" type="url" placeholder="https://..." />
           </div>
           
           <div class="form-group">
-            <label>摘要</label>
-            <textarea v-model="form.excerpt" placeholder="文章摘要" rows="2"></textarea>
+            <label>{{ $t('post.excerpt') }}</label>
+            <textarea v-model="form.excerpt" :placeholder="$t('post.excerpt')" rows="2"></textarea>
           </div>
           
-          <div class="form-group">
-            <label>内容</label>
-            <QuillEditor 
-              v-model:content="form.content" 
-              contentType="html"
-              theme="snow"
-              toolbar="full"
-              placeholder="开始写作..."
-            />
+          <div class="form-group editor-group">
+            <label>{{ $t('post.content') }}</label>
+            <div class="editor-wrapper">
+              <QuillEditor 
+                ref="quillEditorRef"
+                v-model:content="form.content" 
+                contentType="html"
+                theme="snow"
+                toolbar="full"
+                :placeholder="$t('post.startWriting')"
+                @selection-change="handleSelectionChange"
+              />
+            </div>
           </div>
           
           <div class="form-actions">
-            <button type="button" @click="closeForm" class="cancel-btn">取消</button>
+            <button type="button" @click="closeForm" class="cancel-btn">{{ $t('common.cancel') }}</button>
             <button type="submit" class="submit-btn" :disabled="submitting">
-              {{ submitting ? '保存中...' : '保存' }}
+              {{ submitting ? $t('common.saving') : $t('common.save') }}
             </button>
           </div>
         </form>
       </div>
     </div>
+
+    <!-- AI Assistant Sidebar -->
+    <AIAssistantSidebar
+      v-if="showCreateForm"
+      :editor-content="form.content"
+      :selected-text="selectedText"
+      @apply-content="handleAIApply"
+      @show-message="showToastMessage"
+      @refresh-selection="handleRefreshSelection"
+    />
+
+    <!-- SEO Panel -->
+    <SEOPanel
+      v-if="showCreateForm"
+      :post-title="form.title"
+      :post-content="form.content"
+      :post-excerpt="form.excerpt"
+    />
+
+    <!-- Toast Message -->
+    <div v-if="toastMessage" class="toast-message">{{ toastMessage }}</div>
   </div>
 </template>
 
 <script setup>
 import { ref, reactive, onMounted, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { getAllPosts, createPost as apiCreatePost, updatePost as apiUpdatePost, deletePost as apiDeletePost, getCategories } from '../../api'
+import AIAssistantSidebar from '../../components/AIAssistantSidebar.vue'
+import SEOPanel from '../../components/SEOPanel.vue'
 
 const handleCreatePost = (data) => apiCreatePost(data)
 const handleUpdatePost = (id, data) => apiUpdatePost(id, data)
@@ -137,6 +165,11 @@ const submitting = ref(false)
 const showCreateForm = ref(false)
 const editingPost = ref(null)
 const statusFilter = ref('all')
+
+// AI Assistant state
+const quillEditorRef = ref(null)
+const selectedText = ref('')
+const toastMessage = ref('')
 
 const form = reactive({
   title: '',
@@ -182,6 +215,7 @@ const editPost = (post) => {
 const closeForm = () => {
   showCreateForm.value = false
   editingPost.value = null
+  selectedText.value = ''
   Object.assign(form, {
     title: '',
     content: '',
@@ -210,8 +244,10 @@ const submitPost = async () => {
   }
 }
 
+const { t } = useI18n()
+
 const handleDelete = async (id) => {
-  if (confirm('确定要删除这篇文章吗？')) {
+  if (confirm(t('post.deleteConfirm'))) {
     try {
       await handleDeletePost(id)
       fetchPosts()
@@ -230,6 +266,58 @@ const formatDate = (dateStr) => {
     month: 'short',
     day: 'numeric'
   })
+}
+
+// Handle Quill selection change to get selected text
+const handleSelectionChange = (range) => {
+  if (range && range.length > 0 && quillEditorRef.value) {
+    try {
+      const quill = quillEditorRef.value.quill
+      if (quill) {
+        selectedText.value = quill.getText(range.index, range.length)
+      }
+    } catch (e) {
+      console.log('Could not get selected text:', e)
+    }
+  } else {
+    selectedText.value = ''
+  }
+}
+
+// Handle AI apply content
+const handleAIApply = (content, target = 'content') => {
+  if (target === 'excerpt') {
+    form.excerpt = content
+  } else {
+    form.content = content
+  }
+}
+
+// Handle refresh selection from AI sidebar
+const handleRefreshSelection = () => {
+  if (quillEditorRef.value) {
+    try {
+      const quill = quillEditorRef.value.quill
+      if (quill) {
+        const range = quill.getSelection()
+        if (range && range.length > 0) {
+          selectedText.value = quill.getText(range.index, range.length)
+        } else {
+          selectedText.value = ''
+        }
+      }
+    } catch (e) {
+      console.log('Could not get selected text:', e)
+    }
+  }
+}
+
+// Show toast message
+const showToastMessage = (message) => {
+  toastMessage.value = message
+  setTimeout(() => {
+    toastMessage.value = ''
+  }, 3000)
 }
 
 watch(statusFilter, () => {
@@ -416,6 +504,11 @@ onMounted(() => {
   flex-direction: column;
 }
 
+.modal.with-ai-assistant {
+  margin-right: 740px;
+  transition: margin-right 0.3s ease;
+}
+
 .modal-header {
   display: flex;
   justify-content: space-between;
@@ -490,6 +583,43 @@ onMounted(() => {
   min-height: 100px;
 }
 
+/* Editor Group */
+.editor-group {
+  flex: 1;
+  min-height: 300px;
+}
+
+.editor-wrapper {
+  min-height: 280px;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.editor-wrapper :deep(.ql-toolbar) {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px 10px 0 0;
+}
+
+.editor-wrapper :deep(.ql-container) {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-top: none;
+  border-radius: 0 0 10px 10px;
+  font-size: 0.95rem;
+  min-height: 220px;
+}
+
+.editor-wrapper :deep(.ql-editor) {
+  min-height: 220px;
+  color: #fff;
+}
+
+.editor-wrapper :deep(.ql-editor.ql-blank::before) {
+  color: rgba(255,255,255,0.3);
+  font-style: normal;
+}
+
 .form-actions {
   display: flex;
   justify-content: flex-end;
@@ -518,5 +648,32 @@ onMounted(() => {
 
 .submit-btn:disabled {
   opacity: 0.6;
+}
+
+/* Toast Message */
+.toast-message {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border-radius: 10px;
+  color: #fff;
+  font-size: 0.9rem;
+  box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
+  z-index: 2000;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
 }
 </style>

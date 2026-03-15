@@ -1,0 +1,72 @@
+export default {
+  nav: {
+    home: '首页',
+    tech: '技术',
+    design: '设计',
+    about: '关于'
+  },
+  theme: {
+    light: 'Switch to light mode',
+    dark: 'Switch to dark mode'
+  },
+  footer: {
+    tagline: '用文字记录思考，用设计诠释美学',
+    navigation: '导航',
+    about: '关于',
+    contact: '联系我',
+    allRights: 'All rights reserved.'
+  },
+  common: {
+    loading: '加载中...',
+    noData: '暂无数据',
+    confirm: '确定',
+    cancel: '取消',
+    save: '保存',
+    saving: '保存中...',
+    edit: '编辑',
+    delete: '删除',
+    create: '创建',
+    publish: '发布',
+    draft: '草稿',
+    published: '已发布'
+  },
+  post: {
+    all: '全部文章',
+    published: '已发布',
+    draft: '草稿',
+    newPost: '新建文章',
+    createFirst: '创建第一篇文章',
+    noPosts: '暂无文章',
+    title: '标题',
+    category: '分类',
+    selectCategory: '选择分类',
+    status: '状态',
+    cover: '封面图 URL',
+    excerpt: '摘要',
+    content: '内容',
+    startWriting: '开始写作...',
+    uncategorized: '未分类',
+    views: '阅读',
+    editPost: '编辑文章',
+    createPost: '新建文章',
+    deleteConfirm: '确定要删除这篇文章吗？',
+    saveFailed: '保存失败'
+  },
+  category: {
+    tech: '技术',
+    design: '设计',
+    list: '分类列表',
+    all: '所有分类',
+    newCategory: '新建分类',
+    createFirst: '创建第一个分类',
+    noCategories: '暂无分类',
+    name: '名称',
+    slug: 'Slug',
+    color: '颜色',
+    articles: '篇文章',
+    editCategory: '编辑分类',
+    createCategory: '新建分类',
+    deleteConfirm: '确定要删除这个分类吗？',
+    saveFailed: '保存失败'
+  }
+}

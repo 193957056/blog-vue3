@@ -1,0 +1,72 @@
+export default {
+  nav: {
+    home: '홈',
+    tech: '기술',
+    design: '디자인',
+    about: '정보'
+  },
+  theme: {
+    light: '라이트 모드로 전환',
+    dark: '다크 모드로 전환'
+  },
+  footer: {
+    tagline: '글자로 사고를 기록하고 디자인으로 아름다움을 표현',
+    navigation: '탐색',
+    about: '정보',
+    contact: '연락처',
+    allRights: '모든 권리 보유'
+  },
+  common: {
+    loading: '로딩 중...',
+    noData: '데이터 없음',
+    confirm: '확인',
+    cancel: '취소',
+    save: '저장',
+    saving: '저장 중...',
+    edit: '편집',
+    delete: '삭제',
+    create: '생성',
+    publish: '게시',
+    draft: '초안',
+    published: '게시됨'
+  },
+  post: {
+    all: '모든 글',
+    published: '게시됨',
+    draft: '초안',
+    newPost: '새 글',
+    createFirst: '첫 번째 글 작성',
+    noPosts: '글이 없습니다',
+    title: '제목',
+    category: '카테고리',
+    selectCategory: '카테고리 선택',
+    status: '상태',
+    cover: '표지 이미지 URL',
+    excerpt: '요약',
+    content: '내용',
+    startWriting: '작성을 시작하세요...',
+    uncategorized: '미분류',
+    views: '조회',
+    editPost: '글 편집',
+    createPost: '새 글',
+    deleteConfirm: '이 글을 삭제하시겠습니까?',
+    saveFailed: '저장 실패'
+  },
+  category: {
+    tech: '기술',
+    design: '디자인',
+    list: '카테고리 목록',
+    all: '모든 카테고리',
+    newCategory: '새 카테고리',
+    createFirst: '첫 번째 카테고리 작성',
+    noCategories: '카테고리가 없습니다',
+    name: '이름',
+    slug: '슬러그',
+    color: '색상',
+    articles: '개 글',
+    editCategory: '카테고리 편집',
+    createCategory: '새 카테고리',
+    deleteConfirm: '이 카테고리를 삭제하시겠습니까?',
+    saveFailed: '저장 실패'
+  }
+}

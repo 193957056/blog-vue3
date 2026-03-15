@@ -4,27 +4,27 @@
       <div class="footer-content">
         <div class="footer-brand">
           <span class="logo-text">Lumina</span>
-          <p class="footer-tagline">用文字记录思考，用设计诠释美学</p>
+          <p class="footer-tagline">{{ $t('footer.tagline') }}</p>
         </div>
         
         <div class="footer-links">
           <div class="link-group">
-            <h4>导航</h4>
-            <router-link to="/">首页</router-link>
-            <router-link to="/category/tech">技术</router-link>
-            <router-link to="/category/design">设计</router-link>
+            <h4>{{ $t('footer.navigation') }}</h4>
+            <router-link to="/">{{ $t('nav.home') }}</router-link>
+            <router-link to="/category/tech">{{ $t('nav.tech') }}</router-link>
+            <router-link to="/category/design">{{ $t('nav.design') }}</router-link>
           </div>
           
           <div class="link-group">
-            <h4>关于</h4>
-            <router-link to="/about">关于我</router-link>
-            <a href="mailto:hello@example.com">联系我</a>
+            <h4>{{ $t('footer.about') }}</h4>
+            <router-link to="/about">{{ $t('nav.about') }}</router-link>
+            <a href="mailto:hello@example.com">{{ $t('footer.contact') }}</a>
           </div>
         </div>
       </div>
       
       <div class="footer-bottom">
-        <p>&copy; {{ currentYear }} Lumina Blog. All rights reserved.</p>
+        <p>&copy; {{ currentYear }} Lumina Blog. {{ $t('footer.allRights') }}</p>
         <p class="footer-credit">Made with ❤️ and Vue 3</p>
       </div>
     </div>

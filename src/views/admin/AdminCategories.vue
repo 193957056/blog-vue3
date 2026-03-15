@@ -2,18 +2,18 @@
   <div class="categories-management">
     <div class="toolbar">
       <div class="toolbar-left">
-        <h2>分类列表</h2>
+        <h2>{{ $t('category.list') }}</h2>
       </div>
       <button @click="showForm = true" class="create-btn">
-        + 新建分类
+        + {{ $t('category.newCategory') }}
       </button>
     </div>
     
-    <div v-if="loading" class="loading">加载中...</div>
+    <div v-if="loading" class="loading">{{ $t('common.loading') }}</div>
     
     <div v-else-if="categories.length === 0" class="empty-state">
-      <p>暂无分类</p>
-      <button @click="showForm = true" class="create-btn">创建第一个分类</button>
+      <p>{{ $t('category.noCategories') }}</p>
+      <button @click="showForm = true" class="create-btn">{{ $t('category.createFirst') }}</button>
     </div>
     
     <div v-else class="categories-grid">
@@ -23,10 +23,10 @@
           <h3 class="category-name">{{ cat.name }}</h3>
           <span class="category-slug">{{ cat.slug }}</span>
         </div>
-        <div class="category-count">{{ cat.posts?.length || 0 }} 篇文章</div>
+        <div class="category-count">{{ cat.posts?.length || 0 }} {{ $t('category.articles') }}</div>
         <div class="category-actions">
-          <button @click="editCategory(cat)" class="action-btn edit" title="编辑">✏️</button>
-          <button @click="handleDeleteCategory(cat.id)" class="action-btn delete" title="删除">🗑️</button>
+          <button @click="editCategory(cat)" class="action-btn edit" :title="$t('common.edit')">✏️</button>
+          <button @click="deleteCategory(cat.id)" class="action-btn delete" :title="$t('common.delete')">🗑️</button>
         </div>
       </div>
     </div>
@@ -35,23 +35,23 @@
     <div v-if="showForm" class="modal-overlay" @click.self="closeForm">
       <div class="modal">
         <div class="modal-header">
-          <h2>{{ editingCategory ? '编辑分类' : '新建分类' }}</h2>
+          <h2>{{ editingCategory ? $t('category.editCategory') : $t('category.createCategory') }}</h2>
           <button @click="closeForm" class="close-btn">×</button>
         </div>
         
         <form @submit.prevent="submitCategory" class="category-form">
           <div class="form-group">
-            <label>名称</label>
-            <input v-model="form.name" type="text" placeholder="分类名称" required />
+            <label>{{ $t('category.name') }}</label>
+            <input v-model="form.name" type="text" :placeholder="$t('category.name')" required />
           </div>
           
           <div class="form-group">
-            <label>Slug</label>
-            <input v-model="form.slug" type="text" placeholder="URL 标识符" />
+            <label>{{ $t('category.slug') }}</label>
+            <input v-model="form.slug" type="text" placeholder="URL identifier" />
           </div>
           
           <div class="form-group">
-            <label>颜色</label>
+            <label>{{ $t('category.color') }}</label>
             <div class="color-picker">
               <button 
                 v-for="color in colors" 
@@ -66,9 +66,9 @@
           </div>
           
           <div class="form-actions">
-            <button type="button" @click="closeForm" class="cancel-btn">取消</button>
+            <button type="button" @click="closeForm" class="cancel-btn">{{ $t('common.cancel') }}</button>
             <button type="submit" class="submit-btn" :disabled="submitting">
-              {{ submitting ? '保存中...' : '保存' }}
+              {{ submitting ? $t('common.saving') : $t('common.save') }}
             </button>
           </div>
         </form>
@@ -79,7 +79,10 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { getCategories, createCategory as apiCreateCategory, deleteCategory as apiDeleteCategory } from '../../api'
+
+const { t } = useI18n()
 
 const handleCreateCategory = (data) => apiCreateCategory(data)
 const handleDeleteCategory = (id) => apiDeleteCategory(id)
@@ -146,7 +149,7 @@ const submitCategory = async () => {
 }
 
 const handleDelete = async (id) => {
-  if (confirm('确定要删除这个分类吗？')) {
+  if (confirm(t('category.deleteConfirm'))) {
     try {
       await handleDeleteCategory(id)
       fetchCategories()

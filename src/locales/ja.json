@@ -1,0 +1,72 @@
+export default {
+  nav: {
+    home: 'ホーム',
+    tech: 'テクノロジー',
+    design: 'デザイン',
+    about: '概要'
+  },
+  theme: {
+    light: 'ライトモードに切り替え',
+    dark: 'ダークモードに切り替え'
+  },
+  footer: {
+    tagline: '文字で思考を記録し、デザインで美しさを表現',
+    navigation: 'ナビゲーション',
+    about: '概要',
+    contact: 'お問い合わせ',
+    allRights: '全著作権所有'
+  },
+  common: {
+    loading: '読み込み中...',
+    noData: 'データなし',
+    confirm: '確認',
+    cancel: 'キャンセル',
+    save: '保存',
+    saving: '保存中...',
+    edit: '編集',
+    delete: '削除',
+    create: '作成',
+    publish: '公開',
+    draft: '下書き',
+    published: '公開済み'
+  },
+  post: {
+    all: 'すべての記事',
+    published: '公開済み',
+    draft: '下書き',
+    newPost: '新規記事',
+    createFirst: '最初の記事を作成',
+    noPosts: '記事がありません',
+    title: 'タイトル',
+    category: 'カテゴリ',
+    selectCategory: 'カテゴリを選択',
+    status: 'ステータス',
+    cover: 'カバー画像 URL',
+    excerpt: '要約',
+    content: '内容',
+    startWriting: '書き始める...',
+    uncategorized: '未分類',
+    views: '閲覧',
+    editPost: '記事を編集',
+    createPost: '新規記事',
+    deleteConfirm: 'この記事を削除しますか？',
+    saveFailed: '保存に失敗しました'
+  },
+  category: {
+    tech: 'テクノロジー',
+    design: 'デザイン',
+    list: 'カテゴリ一覧',
+    all: 'すべてのカテゴリ',
+    newCategory: '新規カテゴリ',
+    createFirst: '最初のカテゴリを作成',
+    noCategories: 'カテゴリがありません',
+    name: '名前',
+    slug: 'スラッグ',
+    color: '色',
+    articles: '記事',
+    editCategory: 'カテゴリを編集',
+    createCategory: '新規カテゴリ',
+    deleteConfirm: 'このカテゴリを削除しますか？',
+    saveFailed: '保存に失敗しました'
+  }
+}
