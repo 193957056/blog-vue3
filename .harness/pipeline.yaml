@@ -1,0 +1,18 @@
+kind: pipeline
+type: ci
+name: default
+
+steps:
+  - name: install
+    type: run
+    spec:
+      container: node:18-alpine
+      script:
+        - npm install
+
+  - name: build
+    type: run
+    spec:
+      container: node:18-alpine
+      script:
+        - npm run build
