@@ -3,6 +3,8 @@ import HomeView from '../views/HomeView.vue'
 import PostView from '../views/PostView.vue'
 import CategoryView from '../views/CategoryView.vue'
 import AboutView from '../views/AboutView.vue'
+import SearchView from '../views/SearchView.vue'
+import LinksView from '../views/LinksView.vue'
 import LoginView from '../views/admin/LoginView.vue'
 import AdminLayout from '../views/admin/AdminLayout.vue'
 import AdminDashboard from '../views/admin/AdminDashboard.vue'
@@ -41,6 +43,16 @@ const router = createRouter({
       path: '/about',
       name: 'about',
       component: AboutView
+    },
+    {
+      path: '/search',
+      name: 'search',
+      component: SearchView
+    },
+    {
+      path: '/links',
+      name: 'links',
+      component: LinksView
     },
     {
       path: '/login',

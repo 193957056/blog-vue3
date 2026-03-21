@@ -2,7 +2,7 @@ import { createI18n } from 'vue-i18n'
 
 const messages = {
   'zh-CN': {
-    nav: { home: '首页', tech: '技术', design: '设计', about: '关于' },
+    nav: { home: '首页', tech: '技术', design: '设计', about: '关于', links: '友链', search: '搜索文章...' },
     theme: { light: '浅色模式', dark: '深色模式' },
     post: { 
       readMore: '阅读全文', 
@@ -44,7 +44,7 @@ const messages = {
     }
   },
   'en': {
-    nav: { home: 'Home', tech: 'Tech', design: 'Design', about: 'About' },
+    nav: { home: 'Home', tech: 'Tech', design: 'Design', about: 'About', links: 'Links', search: 'Search articles...' },
     theme: { light: 'Light', dark: 'Dark' },
     post: { 
       readMore: 'Read More', 
@@ -86,7 +86,7 @@ const messages = {
     }
   },
   'ja': {
-    nav: { home: 'ホーム', tech: '技術', design: 'デザイン', about: '概要' },
+    nav: { home: 'ホーム', tech: '技術', design: 'デザイン', about: '概要', links: 'リンク', search: '記事を検索...' },
     theme: { light: 'ライト', dark: 'ダーク' },
     post: { 
       readMore: '続きを読む', 
@@ -128,7 +128,7 @@ const messages = {
     }
   },
   'ko': {
-    nav: { home: '홈', tech: '기술', design: '디자인', about: '정보' },
+    nav: { home: '홈', tech: '기술', design: '디자인', about: '정보', links: '링크', search: '글 검색...' },
     theme: { light: '라이트', dark: '다크' },
     post: { 
       readMore: '더 보기', 

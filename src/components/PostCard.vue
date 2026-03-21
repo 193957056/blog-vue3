@@ -5,8 +5,8 @@
     </div>
     
     <div class="card-content">
-      <h3 class="card-title">{{ post.title }}</h3>
-      <p class="card-excerpt">{{ post.excerpt || generateExcerpt(post.content) }}</p>
+      <h3 class="card-title" v-html="highlightKeyword(post.title)"></h3>
+      <p class="card-excerpt" v-html="highlightKeyword(post.excerpt || generateExcerpt(post.content))"></p>
       
       <div class="card-meta">
         <span class="meta-date">{{ formatDate(post.created_at) }}</span>
@@ -37,6 +37,10 @@ const props = defineProps({
   post: {
     type: Object,
     required: true
+  },
+  searchKeyword: {
+    type: String,
+    default: ''
   }
 })
 
@@ -45,7 +49,12 @@ const router = useRouter()
 const categoryColor = props.post.category?.color || '#7C3AED'
 
 const goToPost = () => {
-  router.push(`/post/${props.post.slug}`)
+  // 如果有搜索关键词，带到文章详情页
+  if (props.searchKeyword) {
+    router.push({ path: `/post/${props.post.slug}`, query: { q: props.searchKeyword } })
+  } else {
+    router.push(`/post/${props.post.slug}`)
+  }
 }
 
 const formatDate = (dateStr) => {
@@ -63,6 +72,14 @@ const generateExcerpt = (content) => {
   // Strip markdown and HTML
   const text = content.replace(/[#*`\[\]]/g, '').slice(0, 150)
   return text + (content.length > 150 ? '...' : '')
+}
+
+const highlightKeyword = (text) => {
+  if (!props.searchKeyword || !text) return text
+  
+  const keyword = props.searchKeyword.trim()
+  const regex = new RegExp(`(${keyword})`, 'gi')
+  return text.replace(regex, '<mark>$1</mark>')
 }
 </script>
 
@@ -112,6 +129,13 @@ const generateExcerpt = (content) => {
   line-height: 1.4;
   color: var(--text-primary);
   transition: color var(--transition-fast);
+  
+  :deep(mark) {
+    background: var(--accent-primary);
+    color: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
 }
 
 .card-excerpt {
@@ -122,6 +146,13 @@ const generateExcerpt = (content) => {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  
+  :deep(mark) {
+    background: var(--accent-primary);
+    color: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
 }
 
 .card-meta {

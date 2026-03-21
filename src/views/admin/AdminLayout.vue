@@ -36,17 +36,6 @@
     </aside>
     
     <main class="admin-main">
-      <header class="admin-header">
-        <div class="header-left">
-          <h1 class="page-title">{{ pageTitle }}</h1>
-        </div>
-        <div class="header-right">
-          <router-link to="/" class="header-link" target="_blank">
-            🌐 查看站点
-          </router-link>
-        </div>
-      </header>
-      
       <div class="admin-content">
         <router-view v-slot="{ Component }">
           <transition name="fade" mode="out-in">
@@ -249,48 +238,6 @@ const handleLogout = () => {
   margin-left: 260px;
   display: flex;
   flex-direction: column;
-}
-
-.admin-header {
-  padding: 20px 32px;
-  background: rgba(18, 18, 26, 0.8);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: sticky;
-  top: 0;
-  z-index: 50;
-}
-
-.page-title {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #fff;
-  margin: 0;
-}
-
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.header-link {
-  padding: 8px 16px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  color: rgba(255, 255, 255, 0.7);
-  text-decoration: none;
-  font-size: 0.9rem;
-  transition: all 0.2s ease;
-}
-
-.header-link:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
 }
 
 .admin-content {

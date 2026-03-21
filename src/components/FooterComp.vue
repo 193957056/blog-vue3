@@ -26,13 +26,36 @@
       <div class="footer-bottom">
         <p>&copy; {{ currentYear }} Lumina Blog. {{ $t('footer.allRights') }}</p>
         <p class="footer-credit">Made with ❤️ and Vue 3</p>
+        
+        <!-- ICP 备案号显示 -->
+        <div v-if="icpEnabled" class="icp-info">
+          <a 
+            :href="icpLink" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            class="icp-link"
+          >
+            {{ icpNumber }}
+          </a>
+        </div>
       </div>
     </div>
   </footer>
 </template>
 
 <script setup>
+import { computed } from 'vue'
+import { useConfig } from '@/composables/useConfig'
+
+const { getIcpConfig } = useConfig()
+
 const currentYear = new Date().getFullYear()
+
+// 备案信息
+const icpConfig = computed(() => getIcpConfig())
+const icpEnabled = computed(() => icpConfig.value?.enabled ?? true)
+const icpNumber = computed(() => icpConfig.value?.number ?? '')
+const icpLink = computed(() => icpConfig.value?.link ?? 'https://beian.miit.gov.cn/')
 </script>
 
 <style scoped>
@@ -112,10 +135,35 @@ const currentYear = new Date().getFullYear()
   padding-top: 24px;
   font-size: 0.85rem;
   color: var(--text-muted);
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 .footer-credit {
   opacity: 0.7;
+}
+
+/* ICP 备案信息样式 */
+.icp-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  justify-content: center;
+  margin-top: 8px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-light);
+}
+
+.icp-link {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  text-decoration: none;
+  transition: color 0.2s ease;
+  
+  &:hover {
+    color: var(--accent-primary);
+  }
 }
 
 @media (max-width: 768px) {
@@ -132,6 +180,10 @@ const currentYear = new Date().getFullYear()
     flex-direction: column;
     gap: 8px;
     text-align: center;
+  }
+  
+  .icp-info {
+    margin-top: 16px;
   }
 }
 </style>

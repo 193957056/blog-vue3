@@ -10,10 +10,27 @@
         <router-link to="/" class="nav-link">{{ $t('nav.home') }}</router-link>
         <router-link to="/category/tech" class="nav-link">{{ $t('nav.tech') }}</router-link>
         <router-link to="/category/design" class="nav-link">{{ $t('nav.design') }}</router-link>
+        <router-link to="/links" class="nav-link">{{ $t('nav.links') }}</router-link>
         <router-link to="/about" class="nav-link">{{ $t('nav.about') }}</router-link>
       </div>
 
       <div class="nav-actions">
+        <!-- Search Box -->
+        <div class="search-box" :class="{ active: searchFocused }">
+          <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="M21 21l-4.35-4.35"/>
+          </svg>
+          <input 
+            type="text" 
+            v-model="searchKeyword" 
+            :placeholder="$t('nav.search')"
+            @focus="searchFocused = true"
+            @blur="searchFocused = false"
+            @keyup.enter="handleSearch"
+          />
+        </div>
+        
         <div class="lang-switcher">
           <select v-model="currentLocale" @change="changeLocale" class="lang-select">
             <option value="zh-CN">中文</option>
@@ -40,8 +57,10 @@
 <script setup>
 import { ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useRouter } from 'vue-router'
 
 const { locale } = useI18n()
+const router = useRouter()
 
 const props = defineProps({
   isDark: Boolean
@@ -50,10 +69,18 @@ const props = defineProps({
 defineEmits(['toggle-theme'])
 
 const currentLocale = ref(locale.value)
+const searchKeyword = ref('')
+const searchFocused = ref(false)
 
 const changeLocale = () => {
   locale.value = currentLocale.value
   localStorage.setItem('locale', currentLocale.value)
+}
+
+const handleSearch = () => {
+  if (searchKeyword.value.trim()) {
+    router.push({ name: 'search', query: { q: searchKeyword.value.trim() } })
+  }
 }
 
 watch(locale, (newLocale) => {
@@ -153,6 +180,45 @@ watch(locale, (newLocale) => {
   gap: 12px;
 }
 
+/* Search Box */
+.search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-light);
+  border-radius: 20px;
+  padding: 8px 16px;
+  transition: all var(--transition-fast);
+  
+  &:hover,
+  &.active {
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  }
+  
+  .search-icon {
+    width: 16px;
+    height: 16px;
+    color: var(--text-muted);
+    margin-right: 8px;
+    flex-shrink: 0;
+  }
+  
+  input {
+    border: none;
+    background: none;
+    outline: none;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    width: 160px;
+    
+    &::placeholder {
+      color: var(--text-muted);
+    }
+  }
+}
+
 .lang-switcher {
   .lang-select {
     padding: 8px 12px;
@@ -208,6 +274,10 @@ watch(locale, (newLocale) => {
 @media (max-width: 768px) {
   .nav-links {
     display: none;
+  }
+  
+  .search-box input {
+    width: 120px;
   }
 }
 </style>

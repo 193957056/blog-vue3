@@ -494,7 +494,7 @@ onMounted(() => {
 
 .modal {
   width: 100%;
-  max-width: 700px;
+  max-width: 900px;
   max-height: 90vh;
   background: #12121a;
   border: 1px solid rgba(255,255,255,0.1);
@@ -505,7 +505,7 @@ onMounted(() => {
 }
 
 .modal.with-ai-assistant {
-  margin-right: 740px;
+  margin-right: 380px;
   transition: margin-right 0.3s ease;
 }
 

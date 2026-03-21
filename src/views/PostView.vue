@@ -38,7 +38,7 @@
               <circle cx="12" cy="12" r="10"/>
               <polyline points="12,6 12,12 16,14"/>
             </svg>
-            {{ post.read_time || 1 }} 分钟阅读
+            {{ displayReadTime }} 分钟阅读
           </span>
           <span class="meta-item">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -66,17 +66,39 @@
         <img :src="post.cover" :alt="post.title" />
       </div>
       
-      <!-- Post Body -->
-      <div class="post-body" v-html="renderedContent"></div>
+      <!-- Post Body with TOC -->
+      <div class="post-content-wrapper">
+        <div class="post-body" v-html="renderedContent"></div>
+        
+        <!-- TOC 目录组件 -->
+        <TableOfContents 
+          v-if="features.toc.enabled && post.content"
+          :content="post.content"
+        />
+      </div>
       
       <!-- Post Footer -->
       <footer class="post-footer">
         <div class="footer-actions">
-          <button class="action-btn" @click="handleLike">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <button 
+            class="action-btn" 
+            :class="{ active: isLiked }" 
+            @click="handleLike"
+          >
+            <svg viewBox="0 0 24 24" :fill="isLiked ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2">
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
             </svg>
-            点赞
+            {{ likeCount }} 点赞
+          </button>
+          <button 
+            class="action-btn" 
+            :class="{ active: isFavorited }" 
+            @click="handleFavorite"
+          >
+            <svg viewBox="0 0 24 24" :fill="isFavorited ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2">
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+            </svg>
+            {{ isFavorited ? '已收藏' : '收藏' }}
           </button>
           <button class="action-btn" @click="handleShare">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -90,16 +112,32 @@
           </button>
         </div>
         
+        <!-- Share Image Generator (hidden by default) -->
+        <ShareImageGenerator
+          v-if="features.shareImage.enabled"
+          ref="shareImageRef"
+          :title="post.title"
+          :excerpt="post.excerpt"
+          :author="authorName"
+          :cover-image="post.cover"
+        />
+        
         <div class="author-info">
           <div class="author-avatar">
             <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=lumina" alt="Author" />
           </div>
           <div class="author-details">
-            <span class="author-name">Lumina</span>
-            <span class="author-bio">用文字记录思考，用设计诠释美学</span>
+            <span class="author-name">{{ authorName }}</span>
+            <span class="author-bio">{{ authorBio }}</span>
           </div>
         </div>
       </footer>
+      
+      <!-- Comments Section -->
+      <CommentsSection 
+        :post-id="post.id" 
+        :search-keyword="searchKeyword"
+      />
       
       <!-- Related Posts -->
       <section class="related-posts">
@@ -126,15 +164,45 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useBlogStore } from '@/stores/blog'
+import { useSearchStore } from '@/stores/search'
+import { useConfig } from '@/composables/useConfig'
+import { useReadingTime } from '@/composables/useReadingTime'
 import PostCard from '@/components/PostCard.vue'
+import CommentsSection from '@/components/CommentsSection.vue'
+import TableOfContents from '@/components/TableOfContents.vue'
+import ShareImageGenerator from '@/components/ShareImageGenerator.vue'
 import { marked } from 'marked'
+import { likePost, favoritePost } from '@/api'
 
 const route = useRoute()
 const store = useBlogStore()
+const searchStore = useSearchStore()
+const { getSiteConfig, getFeaturesConfig } = useConfig()
+const { calculateReadingTime } = useReadingTime()
 
 const post = computed(() => store.currentPost)
 const loading = computed(() => store.loading)
 const posts = computed(() => store.posts)
+const searchKeyword = computed(() => route.query.q || '')
+
+// 配置
+const siteConfig = computed(() => getSiteConfig())
+const features = computed(() => getFeaturesConfig())
+const authorName = computed(() => siteConfig.value?.author || 'Lumina')
+const authorBio = computed(() => siteConfig.value?.authorBio || '用文字记录思考，用设计诠释美学')
+
+// 计算阅读时间
+const displayReadTime = computed(() => {
+  if (!post.value) return 1
+  // 优先使用后端返回的阅读时间，否则前端计算
+  if (post.value.read_time) return post.value.read_time
+  return calculateReadingTime(post.value.content || post.value.excerpt || '')
+})
+
+const isLiked = ref(false)
+const isFavorited = ref(false)
+const likeCount = ref(0)
+const shareImageRef = ref(null)
 
 const relatedPosts = computed(() => {
   if (!post.value) return []
@@ -145,7 +213,16 @@ const relatedPosts = computed(() => {
 
 const renderedContent = computed(() => {
   if (!post.value?.content) return ''
-  return marked(post.value.content)
+  let content = marked(post.value.content)
+  
+  // Highlight search keyword in content
+  if (searchKeyword.value) {
+    const keyword = searchKeyword.value.trim()
+    const regex = new RegExp(`(${keyword})`, 'gi')
+    content = content.replace(regex, '<mark>$1</mark>')
+  }
+  
+  return content
 })
 
 const formatDate = (dateStr) => {
@@ -158,9 +235,29 @@ const formatDate = (dateStr) => {
   })
 }
 
-const handleLike = () => {
-  // TODO: Implement like functionality
-  alert('感谢您的支持！')
+const handleLike = async () => {
+  if (!post.value) return
+  
+  try {
+    await likePost(post.value.id)
+    isLiked.value = !isLiked.value
+    likeCount.value += isLiked.value ? 1 : -1
+  } catch (err) {
+    console.error('Failed to like post:', err)
+    alert('点赞失败，请稍后重试')
+  }
+}
+
+const handleFavorite = async () => {
+  if (!post.value) return
+  
+  try {
+    await favoritePost(post.value.id)
+    isFavorited.value = !isFavorited.value
+  } catch (err) {
+    console.error('Failed to favorite post:', err)
+    alert('收藏失败，请稍后重试')
+  }
 }
 
 const handleShare = () => {
@@ -170,13 +267,64 @@ const handleShare = () => {
       url: window.location.href
     })
   } else {
+    // 复制链接
     navigator.clipboard.writeText(window.location.href)
     alert('链接已复制到剪贴板')
+    
+    // 如果开启了分享图功能，显示下载选项
+    if (features.value.shareImage?.enabled) {
+      const download = confirm('是否下载文章分享图？')
+      if (download && shareImageRef.value) {
+        shareImageRef.value.downloadImage()
+      }
+    }
   }
 }
 
 const fetchPost = async () => {
   await store.fetchPost(route.params.slug)
+  if (post.value) {
+    likeCount.value = post.value.like_count || 0
+    isLiked.value = post.value.is_liked || false
+    isFavorited.value = post.value.is_favorited || false
+    
+    // 更新页面标题和 meta 标签
+    updateMetaTags()
+  }
+}
+
+// 更新页面 meta 标签（用于社交分享）
+const updateMetaTags = () => {
+  if (!post.value) return
+  
+  // 更新 title
+  document.title = `${post.value.title} - ${siteConfig.value?.name || 'Lumina Blog'}`
+  
+  // 更新 meta 标签
+  const metaDescription = document.querySelector('meta[name="description"]')
+  if (metaDescription) {
+    metaDescription.setAttribute('content', post.value.excerpt || siteConfig.value?.description || '')
+  }
+  
+  // 更新 Open Graph 标签
+  const ogTitle = document.querySelector('meta[property="og:title"]')
+  const ogDescription = document.querySelector('meta[property="og:description"]')
+  const ogImage = document.querySelector('meta[property="og:image"]')
+  const ogUrl = document.querySelector('meta[property="og:url"]')
+  
+  if (ogTitle) ogTitle.setAttribute('content', post.value.title)
+  if (ogDescription) ogDescription.setAttribute('content', post.value.excerpt || '')
+  if (ogImage) ogImage.setAttribute('content', post.value.cover || siteConfig.value?.url + '/og-image.png')
+  if (ogUrl) ogUrl.setAttribute('content', window.location.href)
+  
+  // 更新 Twitter 标签
+  const twitterTitle = document.querySelector('meta[property="twitter:title"]')
+  const twitterDescription = document.querySelector('meta[property="twitter:description"]')
+  const twitterImage = document.querySelector('meta[property="twitter:image"]')
+  
+  if (twitterTitle) twitterTitle.setAttribute('content', post.value.title)
+  if (twitterDescription) twitterDescription.setAttribute('content', post.value.excerpt || '')
+  if (twitterImage) twitterImage.setAttribute('content', post.value.cover || siteConfig.value?.url + '/og-image.png')
 }
 
 watch(() => route.params.slug, fetchPost)
@@ -279,6 +427,21 @@ onMounted(() => {
   }
 }
 
+/* Content Wrapper with TOC */
+.post-content-wrapper {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+}
+
+@media (min-width: 1280px) {
+  .post-content-wrapper {
+    grid-template-columns: 1fr 220px;
+    gap: 48px;
+  }
+}
+
 /* Body */
 .post-body {
   font-size: 1.0625rem;
@@ -288,11 +451,13 @@ onMounted(() => {
   :deep(h2) {
     font-size: 1.75rem;
     margin: 48px 0 24px;
+    scroll-margin-top: 100px;
   }
   
   :deep(h3) {
     font-size: 1.25rem;
     margin: 32px 0 16px;
+    scroll-margin-top: 100px;
   }
   
   :deep(p) {
@@ -340,6 +505,13 @@ onMounted(() => {
       text-decoration: underline;
     }
   }
+  
+  :deep(mark) {
+    background: var(--accent-primary);
+    color: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
 }
 
 /* Footer */
@@ -354,6 +526,7 @@ onMounted(() => {
   justify-content: center;
   gap: 16px;
   margin-bottom: 48px;
+  flex-wrap: wrap;
 }
 
 .action-btn {
@@ -378,6 +551,12 @@ onMounted(() => {
   &:hover {
     border-color: var(--accent-primary);
     color: var(--accent-primary);
+  }
+  
+  &.active {
+    background: var(--accent-primary);
+    border-color: var(--accent-primary);
+    color: white;
   }
 }
 
@@ -504,6 +683,15 @@ onMounted(() => {
   .author-info {
     flex-direction: column;
     text-align: center;
+  }
+  
+  .footer-actions {
+    flex-direction: column;
+    align-items: stretch;
+    
+    .action-btn {
+      justify-content: center;
+    }
   }
 }
 </style>

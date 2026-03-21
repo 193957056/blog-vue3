@@ -3,7 +3,9 @@ export default {
     home: '首页',
     tech: '技术',
     design: '设计',
-    about: '关于'
+    about: '关于',
+    links: '友链',
+    search: '搜索文章...'
   },
   theme: {
     light: 'Switch to light mode',
